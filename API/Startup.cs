@@ -19,6 +19,7 @@ namespace API
     public class Startup
     {
         private readonly IConfiguration _config;
+        readonly string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
         public Startup(IConfiguration config)
         {
@@ -35,7 +36,9 @@ namespace API
             {
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection"));
             });
+             services.AddCors();
             services.AddControllers();
+            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "API", Version = "v1" });
@@ -56,6 +59,11 @@ namespace API
 
             app.UseRouting();
 
+            //app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200/"));
+            app.UseCors(builder => builder
+                .AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader());
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
